@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from config import API_KEY
 from db.supabase_utils import fetch_cities, insert_weather
 
+
 def get_weather(lat, lon, api_key=API_KEY, units="metric", lang="en"):
     url = "https://api.openweathermap.org/data/2.5/weather"
     params = {"lat": lat, "lon": lon, "appid": api_key, "units": units, "lang": lang}
