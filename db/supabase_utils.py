@@ -11,3 +11,7 @@ def fetch_cities():
 def insert_weather(row: dict):
     """Insert one row into weather_data."""
     return supabase.table("weather_data").insert(row).execute()
+
+def insert_analysis(row: dict):
+    """Insert one row into weather_data."""
+    return supabase.table("analysis").insert(row).execute()
