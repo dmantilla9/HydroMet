@@ -15,3 +15,17 @@ def insert_weather(row: dict):
 def insert_analysis(row: dict):
     """Insert one row into weather_data."""
     return supabase.table("analysis").insert(row).execute()
+
+def insert_city(data: dict):
+    try:
+        response = supabase.table("cities").insert(data).execute()
+        return response
+    except Exception as e:
+        return {"error": str(e)}
+
+def insert_water_network(data: dict):
+    try:
+        response = supabase.table("water_network").insert(data).execute()
+        return response
+    except Exception as e:
+        return {"error": str(e)}
