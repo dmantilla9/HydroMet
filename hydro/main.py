@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 End-to-end:
 - fetch city
@@ -10,10 +9,11 @@ End-to-end:
 """
 
 from db.supabase_utils import fetch_cities, insert_analysis
-from .payloads import build_search_payload
-from .http_client import make_session, warmup_get, post_search
-from .parser import parse_search_page
+
+from .http_client import make_session, post_search, warmup_get
 from .mapper import build_analysis_record
+from .parser import parse_search_page
+from .payloads import build_search_payload
 
 
 def main():
@@ -45,10 +45,20 @@ def main():
     )
 
     # Debug: show a few mapped fields
-    preview_keys = ["departement", "commune", "reseau", "date_prelevement",
-                    "commune_prelevement", "conclusion_sanitaire",
-                    "conformite_bacteriologique", "conformite_physico_chimique",
-                    "ph", "conductivite_25c", "enterocoques_100ml_ms", "enterocoques_100ml_ms_value"]
+    preview_keys = [
+        "departement",
+        "commune",
+        "reseau",
+        "date_prelevement",
+        "commune_prelevement",
+        "conclusion_sanitaire",
+        "conformite_bacteriologique",
+        "conformite_physico_chimique",
+        "ph",
+        "conductivite_25c",
+        "enterocoques_100ml_ms",
+        "enterocoques_100ml_ms_value",
+    ]
     print("Record preview:", {k: record.get(k) for k in preview_keys})
 
     # Insert into DB

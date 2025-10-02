@@ -1,20 +1,23 @@
 import os
+
 import bcrypt
 import streamlit as st
 from dotenv import load_dotenv
-from supabase import create_client, Client
+from supabase import Client, create_client
 
 # ---- Env & Config ----
 load_dotenv()
-from config import SUPABASE_URL, SUPABASE_KEY  # reuse your existing config
+from config import SUPABASE_KEY, SUPABASE_URL  # reuse your existing config
 
 RESET_MASTER_KEY = os.getenv("RESET_MASTER_KEY", "")  # required for password resets
 
 st.set_page_config(page_title="HydroMet", page_icon="💧", layout="wide")
 
+
 def get_supabase() -> Client:
     """Return a Supabase client using your existing config."""
     return create_client(SUPABASE_URL, SUPABASE_KEY)
+
 
 # ---- Session ----
 if "user" not in st.session_state:
@@ -74,10 +77,12 @@ En bref :
 """
     )
 
+
 # ---------- Helpers ----------
 def bcrypt_hash(pwd: str) -> str:
     salt = bcrypt.gensalt(rounds=12)
     return bcrypt.hashpw(pwd.encode("utf-8"), salt).decode("utf-8")
+
 
 # ---------- Right: auth (login / register / reset) ----------
 with right_col:
@@ -134,9 +139,7 @@ with right_col:
                     with st.form("register_form_main", clear_on_submit=True):
                         r_email = st.text_input("Email", key="reg_email")
                         r_pwd = st.text_input("Password", type="password", key="reg_pwd")
-                        r_pwd2 = st.text_input(
-                            "Confirm password", type="password", key="reg_pwd2"
-                        )
+                        r_pwd2 = st.text_input("Confirm password", type="password", key="reg_pwd2")
                         submit_reg = st.form_submit_button("Create account")
 
                     if submit_reg:
@@ -173,9 +176,7 @@ with right_col:
                                     st.session_state.show_register = False
                                     st.rerun()
                                 else:
-                                    st.error(
-                                        "Could not create the account. Please retry."
-                                    )
+                                    st.error("Could not create the account. Please retry.")
 
                 # ======== RESET PASSWORD (developer mode with master key) ========
                 elif st.session_state.show_reset:
@@ -183,8 +184,12 @@ with right_col:
                     with st.form("reset_form_main", clear_on_submit=True):
                         r_email = st.text_input("Email", key="reset_email")
                         new_pwd = st.text_input("New password", type="password", key="reset_pwd")
-                        new_pwd2 = st.text_input("Confirm new password", type="password", key="reset_pwd2")
-                        reset_key = st.text_input("Reset key", type="password", key="reset_key_hint")
+                        new_pwd2 = st.text_input(
+                            "Confirm new password", type="password", key="reset_pwd2"
+                        )
+                        reset_key = st.text_input(
+                            "Reset key", type="password", key="reset_key_hint"
+                        )
                         submit_reset = st.form_submit_button("Update password")
 
                     if submit_reset:

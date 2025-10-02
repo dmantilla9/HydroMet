@@ -7,8 +7,8 @@ Very small HTTP client:
 
 import requests
 import urllib3
-from typing import Tuple
-from .settings import URL_GET, URL_POST, DEFAULT_HEADERS, VERIFY_SSL
+
+from .settings import DEFAULT_HEADERS, URL_GET, URL_POST, VERIFY_SSL
 
 # Silence "InsecureRequestWarning" if VERIFY_SSL=False during early tests.
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -40,7 +40,7 @@ def warmup_get(session: requests.Session) -> None:
         pass
 
 
-def post_search(session: requests.Session, payload: dict) -> Tuple[int, str]:
+def post_search(session: requests.Session, payload: dict) -> tuple[int, str]:
     """
     Perform the POST to OROBNAT and return (status_code, response_text).
     Raises HTTPError on non-2xx responses.

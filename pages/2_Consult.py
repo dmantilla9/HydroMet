@@ -1,11 +1,11 @@
-import streamlit as st
 import pandas as pd
+import streamlit as st
 from dotenv import load_dotenv
-from supabase import create_client, Client
 from postgrest.exceptions import APIError
+from supabase import Client, create_client
 
 load_dotenv()
-from config import SUPABASE_URL, SUPABASE_KEY  # reuse your existing config
+from config import SUPABASE_KEY, SUPABASE_URL  # reuse your existing config
 
 st.set_page_config(page_title="Consult - HydroMet", page_icon="🔎", layout="wide")
 
@@ -16,8 +16,10 @@ if "user" not in st.session_state or st.session_state.user is None:
 
 is_admin = bool(st.session_state.user.get("is_admin", False))
 
+
 def get_supabase() -> Client:
     return create_client(SUPABASE_URL, SUPABASE_KEY)
+
 
 def safe_query(table: str, search_or: str | None, limit: int, order_candidates: list[str]):
     """
@@ -39,7 +41,10 @@ def safe_query(table: str, search_or: str | None, limit: int, order_candidates: 
             return q.execute().data
         except APIError as e:
             # 42703 undefined column
-            if getattr(e, "code", None) == "42703" or "does not exist" in (getattr(e, "message", "") or str(e)).lower():
+            if (
+                getattr(e, "code", None) == "42703"
+                or "does not exist" in (getattr(e, "message", "") or str(e)).lower()
+            ):
                 last_err = e
                 continue
             raise
@@ -48,6 +53,7 @@ def safe_query(table: str, search_or: str | None, limit: int, order_candidates: 
         return build_base().execute().data
     except APIError as e:
         raise last_err or e
+
 
 st.title("🔎 Consult tables")
 
@@ -60,7 +66,9 @@ with tabs[0]:
     st.subheader("cities")
     c1, c2 = st.columns([2, 1])
     with c1:
-        search = st.text_input("Search (postal_code / commune_code / city_name / country / water_code / timezone)")
+        search = st.text_input(
+            "Search (postal_code / commune_code / city_name / country / water_code / timezone)"
+        )
     with c2:
         limit = st.number_input("Limit", min_value=10, max_value=10000, value=500, step=10)
 
@@ -106,7 +114,9 @@ with tabs[1]:
     with c1:
         search2 = st.text_input("Search (water_code / water_network_name)", key="wn_s")
     with c2:
-        limit2 = st.number_input("Limit", min_value=10, max_value=10000, value=500, step=10, key="wn_l")
+        limit2 = st.number_input(
+            "Limit", min_value=10, max_value=10000, value=500, step=10, key="wn_l"
+        )
 
     search_or2 = None
     if search2:
@@ -144,7 +154,9 @@ if is_admin:
         with c1:
             search3 = st.text_input("Search (email)")
         with c2:
-            limit3 = st.number_input("Limit", min_value=10, max_value=10000, value=500, step=10, key="usr_l")
+            limit3 = st.number_input(
+                "Limit", min_value=10, max_value=10000, value=500, step=10, key="usr_l"
+            )
 
         search_or3 = None
         if search3:

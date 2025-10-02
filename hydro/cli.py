@@ -2,11 +2,12 @@
 # Command Line Interface for HydroMet ETL (English version)
 
 import argparse
+import logging
 import sys
 import time
-import logging
 
 from db.supabase_utils import fetch_cities
+
 from .etl_runner import process_city, process_html_debug
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -15,7 +16,9 @@ log = logging.getLogger("hydromet")
 
 def main():
     parser = argparse.ArgumentParser(description="HydroMet ETL runner")
-    parser.add_argument("--html", type=str, default="", help="Path to a local HTML file (offline mode)")
+    parser.add_argument(
+        "--html", type=str, default="", help="Path to a local HTML file (offline mode)"
+    )
     parser.add_argument("--reseau", type=str, default="", help="Reseau code (optional)")
     parser.add_argument("--departement", type=str, default="", help="Departement code (optional)")
     parser.add_argument("--commune", type=str, default="", help="Commune INSEE code (optional)")
@@ -24,15 +27,19 @@ def main():
     parser.add_argument("--city-index", type=int, default=None, help="City index (optional)")
 
     # Batch controls
-    parser.add_argument("--limit", type=int, default=0, help="Process only the first N active cities (0 = all)")
-    parser.add_argument("--sleep", type=float, default=0.8, help="Seconds to sleep between cities (anti rate-limit)")
+    parser.add_argument(
+        "--limit", type=int, default=0, help="Process only the first N active cities (0 = all)"
+    )
+    parser.add_argument(
+        "--sleep", type=float, default=0.8, help="Seconds to sleep between cities (anti rate-limit)"
+    )
 
     args = parser.parse_args()
 
     try:
         # ---------- Offline mode (local HTML) ----------
         if args.html:
-            with open(args.html, "r", encoding="utf-8") as f:
+            with open(args.html, encoding="utf-8") as f:
                 html = f.read()
             page_id = process_html_debug(
                 html,

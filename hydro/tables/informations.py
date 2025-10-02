@@ -1,10 +1,12 @@
-from typing import Dict
 from bs4 import BeautifulSoup
-from ..parsing.sections import parse_section_kv
-from ..parsing.mappers import parse_datetime_any
+
 from db.supabase_utils import upsert_informations as sb_upsert_informations  # usar utils
 
-def build_informations(html: str, id_page: str) -> Dict:
+from ..parsing.mappers import parse_datetime_any
+from ..parsing.sections import parse_section_kv
+
+
+def build_informations(html: str, id_page: str) -> dict:
     soup = BeautifulSoup(html, "html.parser")
     info = parse_section_kv(soup, "Informations générales")
 
@@ -25,5 +27,6 @@ def build_informations(html: str, id_page: str) -> Dict:
         "maitre_ouvrage": gi("maître") or gi("maitre"),
     }
 
-def upsert_informations(row: Dict) -> None:
+
+def upsert_informations(row: dict) -> None:
     sb_upsert_informations(row)

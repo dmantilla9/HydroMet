@@ -1,14 +1,14 @@
-import streamlit as st
-from supabase import create_client, Client
-from dotenv import load_dotenv
-import re
-
-import sys
 import os
+import re
+import sys
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import streamlit as st
+from dotenv import load_dotenv
+from supabase import Client, create_client
 
-from config import SUPABASE_URL, SUPABASE_KEY
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from config import SUPABASE_KEY, SUPABASE_URL
 from db.supabase_utils import insert_city, insert_water_network
 
 # ============ Setup Supabase ============ #
@@ -18,9 +18,11 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # ============ UI Components ============ #
 
+
 def to_upper():
     # Convert text to uppercase while typing
     st.session_state.water_network_name = st.session_state.water_network_name.upper()
+
 
 def city_form():
     st.subheader("🏙️ Add New City")
@@ -58,6 +60,7 @@ def city_form():
                 else:
                     st.success(f"✅ City '{city_name}' added successfully!")
 
+
 def water_network_form():
     st.subheader("〰️ Add New Water Network")
     with st.form("water_network_form", clear_on_submit=True):
@@ -69,7 +72,7 @@ def water_network_form():
         if submitted:
             if not water_code:
                 st.error("⚠️ Water Code is required.")
-            elif not re.match(r'^[0-9_]+$', water_code):
+            elif not re.match(r"^[0-9_]+$", water_code):
                 st.error("⚠️ Water Code must contain only digits and underscores (_).")
             else:
                 data = {
@@ -80,19 +83,16 @@ def water_network_form():
                 if "error" in response:
                     st.error(f"❌ Error: {response['error']}")
                 else:
-                    st.success(f"✅ Water Network '{water_network_name or water_code}' added successfully!")
+                    st.success(
+                        f"✅ Water Network '{water_network_name or water_code}' added successfully!"
+                    )
+
 
 # ============ Main App ============ #
 def main():
-    st.markdown(
-        "<h1 style='text-align: center;'>🌊 HydroMet 🌦️</h1>",
-        unsafe_allow_html=True
-    )
+    st.markdown("<h1 style='text-align: center;'>🌊 HydroMet 🌦️</h1>", unsafe_allow_html=True)
 
-    option = st.selectbox(
-        "Select the table to insert data:",
-        ("cities", "water_network")
-    )
+    option = st.selectbox("Select the table to insert data:", ("cities", "water_network"))
 
     if option == "cities":
         city_form()
@@ -100,7 +100,7 @@ def main():
         water_network_form()
 
     st.markdown(
-    """
+        """
     <style>
     .footer {
         position: fixed;
@@ -117,8 +117,9 @@ def main():
         © 2025 Fernando MANTILLA – <a href="https://github.com/dmantilla9" target="_blank">GitHub</a>
     </div>
     """,
-    unsafe_allow_html=True
-)
+        unsafe_allow_html=True,
+    )
+
 
 if __name__ == "__main__":
     main()

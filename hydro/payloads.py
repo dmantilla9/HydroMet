@@ -1,12 +1,13 @@
-from typing import Dict, Any
+from typing import Any
+
 from .settings import DEFAULT_SEARCH
-#from db.supabase_utils import fetch_cities
+
+# from db.supabase_utils import fetch_cities
 
 
+def build_search_payload(city: dict[str, Any]) -> dict[str, str]:
 
-def build_search_payload(city: Dict[str, Any]) -> Dict[str, str]:
-    
-    #city = fetch_cities()[0] if city is None else city
+    # city = fetch_cities()[0] if city is None else city
     """
     Build the POST payload that OROBNAT expects, using the DB 'city' row.
     Expected 'city' keys:
@@ -26,4 +27,6 @@ def build_search_payload(city: Dict[str, Any]) -> Dict[str, str]:
         "reseau": water_code,
     }
     return payload
+
+
 # print(build_search_payload(None))  # for quick manual testing

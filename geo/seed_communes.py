@@ -1,9 +1,8 @@
-import requests
-import pandas as pd
-from supabase import create_client, Client
-import os
 import numpy as np
-from config import SUPABASE_URL, SUPABASE_KEY, CSV_URL
+import pandas as pd
+from supabase import Client, create_client
+
+from config import CSV_URL, SUPABASE_KEY, SUPABASE_URL
 
 # -------------------------
 # INIT SUPABASE
@@ -46,7 +45,7 @@ communes = communes.replace({np.nan: None, np.inf: None, -np.inf: None})
 rows = communes.to_dict(orient="records")
 
 for i in range(0, len(rows), batch_size):
-    batch = rows[i:i+batch_size]
+    batch = rows[i : i + batch_size]
     # supabase.table("dim_geo_communes").insert(batch).execute() -- Only in the first run
     supabase.table("dim_geo_communes").upsert(batch).execute()
     print(f"Inserted batch {i//batch_size + 1}")

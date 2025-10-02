@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Map parsed DataFrames (meta/info/conf/res) into a single dict
 matching the columns of table public.analysis.
@@ -10,10 +9,12 @@ Strategy:
 """
 
 from __future__ import annotations
-from typing import Dict, Any, Optional
-import pandas as pd
+
 import re
 import unicodedata
+from typing import Any
+
+import pandas as pd
 
 
 def _norm(s: str) -> str:
@@ -24,7 +25,7 @@ def _norm(s: str) -> str:
     return s
 
 
-def _first_float(val: str) -> Optional[float]:
+def _first_float(val: str) -> float | None:
     """
     Extract first float-like number from a result string.
     Handles French decimals (comma), signs and inequalities.
@@ -76,7 +77,6 @@ PARAM_MAP = {
     "aerobies revivifiables 36": ("bact_aer_rev_36_44h", "bact_aer_rev_36_44h_value"),
     "coliformes": ("bacteries_coliformes_100ml_ms", "bacteries_coliformes_100ml_ms_value"),
     "escherichia coli": ("escherichia_coli_100ml_mf", "escherichia_coli_100ml_mf_value"),
-
     # Field phys-chem
     "temperature": ("temperature_eau_terrain", None),
     "turbidite": ("turbidite_nephelometrique_nfu", None),
@@ -85,11 +85,9 @@ PARAM_MAP = {
     "ph terrain": ("ph_terrain", None),
     "ph": ("ph", None),
     "conductivite": ("conductivite_25c", None),
-
     # Chemistry
     "ammonium": ("ammonium_nh4", None),
     "aluminium total": ("aluminium_total", None),
-
     # Qualitative
     "coloration": ("coloration", None),
     "couleur": ("couleur_qualitatif", None),
@@ -100,7 +98,7 @@ PARAM_MAP = {
 }
 
 
-def _find_result_columns(df: pd.DataFrame) -> tuple[str, Optional[str]]:
+def _find_result_columns(df: pd.DataFrame) -> tuple[str, str | None]:
     """
     Try to identify the parameter and result columns in res_df.
     Returns (param_col, value_col) where value_col is the 'result' text column.
@@ -130,8 +128,8 @@ def _find_result_columns(df: pd.DataFrame) -> tuple[str, Optional[str]]:
     return param_col, value_col
 
 
-def _map_info_fields(info_df: pd.DataFrame) -> Dict[str, Any]:
-    out: Dict[str, Any] = {}
+def _map_info_fields(info_df: pd.DataFrame) -> dict[str, Any]:
+    out: dict[str, Any] = {}
     if info_df is None or info_df.empty:
         return out
     for col in info_df.columns:
@@ -143,8 +141,8 @@ def _map_info_fields(info_df: pd.DataFrame) -> Dict[str, Any]:
     return out
 
 
-def _map_conf_fields(conf_df: pd.DataFrame) -> Dict[str, Any]:
-    out: Dict[str, Any] = {}
+def _map_conf_fields(conf_df: pd.DataFrame) -> dict[str, Any]:
+    out: dict[str, Any] = {}
     if conf_df is None or conf_df.empty:
         return out
     for col in conf_df.columns:
@@ -156,13 +154,13 @@ def _map_conf_fields(conf_df: pd.DataFrame) -> Dict[str, Any]:
     return out
 
 
-def _map_results(res_df: pd.DataFrame) -> Dict[str, Any]:
+def _map_results(res_df: pd.DataFrame) -> dict[str, Any]:
     """
     Transform "Résultats d'analyses" (long form) into fixed DB columns.
     - Stores raw text in *_text columns when schema has them,
       and a numeric value in *_value when applicable.
     """
-    out: Dict[str, Any] = {}
+    out: dict[str, Any] = {}
     if res_df is None or res_df.empty:
         return out
 
@@ -183,11 +181,12 @@ def _map_results(res_df: pd.DataFrame) -> Dict[str, Any]:
                 num = _first_float(presult)
                 if db_value:
                     out[db_value] = num
-                else:
-                    # If the target column itself is numeric (e.g. pH), try numeric there.
-                    # We decide by simple heuristic: if a float exists and target col is not obviously qualitative.
-                    if num is not None and not any(q in db_text for q in ("qualitatif", "commentaire")):
-                        out[db_text] = num
+                # If the target column itself is numeric (e.g. pH), try numeric there.
+                # We decide by simple heuristic: if a float exists and target col is not obviously qualitative.
+                elif num is not None and not any(
+                    q in db_text for q in ("qualitatif", "commentaire")
+                ):
+                    out[db_text] = num
                 break
 
     return out
@@ -198,13 +197,13 @@ def build_analysis_record(
     info_df: pd.DataFrame,
     conf_df: pd.DataFrame,
     res_df: pd.DataFrame,
-    payload: Dict[str, Any],
-) -> Dict[str, Any]:
+    payload: dict[str, Any],
+) -> dict[str, Any]:
     """
     Produce a single dict ready for insertion into public.analysis.
     Required NOT NULL fields: departement, commune, reseau.
     """
-    record: Dict[str, Any] = {
+    record: dict[str, Any] = {
         "departement": payload.get("departement"),
         "commune": payload.get("communeDepartement"),
         "reseau": payload.get("reseau"),
@@ -220,7 +219,9 @@ def build_analysis_record(
     # Optional: parse/normalize date_prelevement to ISO timestamp (if present and parseable)
     if record.get("date_prelevement"):
         try:
-            ts = pd.to_datetime(record["date_prelevement"], dayfirst=True, errors="coerce", utc=True)
+            ts = pd.to_datetime(
+                record["date_prelevement"], dayfirst=True, errors="coerce", utc=True
+            )
             if pd.notna(ts):
                 record["date_prelevement"] = ts.isoformat()
             else:

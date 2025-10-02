@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Parse OROBNAT HTML into pandas DataFrames:
 - meta_df: payload echo + resolved labels
@@ -7,12 +6,12 @@ Parse OROBNAT HTML into pandas DataFrames:
 - res_df:  "Résultats d'analyses" (N rows, columns depend on page)
 """
 
-from bs4 import BeautifulSoup
 import pandas as pd
+from bs4 import BeautifulSoup
 
 H3_INFO = "Informations générales"
 H3_CONF = "Conformité"
-H3_RES  = "Résultats d'analyses"
+H3_RES = "Résultats d'analyses"
 
 
 def _clean(text: str | None) -> str:
@@ -22,7 +21,9 @@ def _clean(text: str | None) -> str:
 
 
 def _find_table_after_h3(soup: BeautifulSoup, title_contains: str):
-    h3 = soup.find(lambda t: t.name == "h3" and title_contains.lower() in (t.get_text() or "").lower())
+    h3 = soup.find(
+        lambda t: t.name == "h3" and title_contains.lower() in (t.get_text() or "").lower()
+    )
     return h3.find_next("table") if h3 else None
 
 
@@ -64,7 +65,11 @@ def parse_search_page(html: str, payload: dict) -> dict:
                     if s2:
                         communes.append(s2)
             break
-    communes_df = pd.DataFrame({"commune_servie": communes}) if communes else pd.DataFrame(columns=["commune_servie"])
+    communes_df = (
+        pd.DataFrame({"commune_servie": communes})
+        if communes
+        else pd.DataFrame(columns=["commune_servie"])
+    )
 
     # Generic TH/TD table → dict
     def table_to_dict(table_tag) -> dict:
@@ -95,20 +100,29 @@ def parse_search_page(html: str, payload: dict) -> dict:
             if not tds:
                 continue
             if headers and len(tds) == len(headers):
-                row = {headers[i]: _clean(tds[i].get_text(" ", strip=True)) for i in range(len(headers))}
+                row = {
+                    headers[i]: _clean(tds[i].get_text(" ", strip=True))
+                    for i in range(len(headers))
+                }
             else:
-                row = {f"col_{i+1}": _clean(td.get_text(" ", strip=True)) for i, td in enumerate(tds)}
+                row = {
+                    f"col_{i+1}": _clean(td.get_text(" ", strip=True)) for i, td in enumerate(tds)
+                }
             if any(v for v in row.values()):
                 rows.append(row)
         res_df = pd.DataFrame(rows) if rows else pd.DataFrame()
 
-    meta_df = pd.DataFrame([{
-        "departement_value": payload.get("departement"),
-        "commune_value": payload.get("communeDepartement"),
-        "reseau_value": payload.get("reseau"),
-        "departement_label": dep_label,
-        "commune_label": com_label,
-    }])
+    meta_df = pd.DataFrame(
+        [
+            {
+                "departement_value": payload.get("departement"),
+                "commune_value": payload.get("communeDepartement"),
+                "reseau_value": payload.get("reseau"),
+                "departement_label": dep_label,
+                "commune_label": com_label,
+            }
+        ]
+    )
 
     return {
         "meta_df": meta_df,

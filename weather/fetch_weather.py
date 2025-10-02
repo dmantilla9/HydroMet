@@ -1,6 +1,7 @@
-import requests
 import time
 from datetime import datetime, timezone
+
+import requests
 
 from config import API_KEY, OPENWATHER_URL
 from db.supabase_utils import fetch_cities, insert_weather
@@ -14,6 +15,7 @@ def get_weather(lat, lon, api_key=API_KEY, units="metric", lang="en"):
         return resp.json()
     print("API error:", resp.status_code, resp.text)
     return None
+
 
 def build_weather_row(city_row, weather):
     """Map API JSON -> DB row schema."""
@@ -39,6 +41,7 @@ def build_weather_row(city_row, weather):
         "sunset_unix": weather.get("sys", {}).get("sunset"),
     }
 
+
 def main():
     cities = fetch_cities()
     if not cities:
@@ -62,6 +65,7 @@ def main():
         else:
             print(f"❌ [{i}/{len(cities)}] No data for {c['city_name']}.")
         time.sleep(1.1)  # Respect API rate limits
+
 
 if __name__ == "__main__":
     main()

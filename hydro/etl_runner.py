@@ -1,14 +1,16 @@
 # hydro/etl_runner.py
+
 from bs4 import BeautifulSoup
-from typing import Dict
-from .http_client import make_session, warmup_get, post_search
-from .payloads import build_search_payload
-from .parsing.mappers import parse_datetime_any, build_id_from_date_and_insee
+
+from .http_client import make_session, post_search, warmup_get
+from .parsing.mappers import build_id_from_date_and_insee, parse_datetime_any
 from .parsing.sections import parse_section_kv
+from .payloads import build_search_payload
+from .tables.conformite import build_conformite, upsert_conformite
 from .tables.criteres import build_criteres, upsert_criteres
 from .tables.informations import build_informations, upsert_informations
-from .tables.conformite import build_conformite, upsert_conformite
 from .tables.resultats import build_resultats, upsert_resultats
+
 
 def _extract_prelevement_datetime(html: str):
     soup = BeautifulSoup(html, "html.parser")
@@ -18,10 +20,12 @@ def _extract_prelevement_datetime(html: str):
             return parse_datetime_any(v)
     return None
 
+
 def _compute_page_id(html: str, payload: dict) -> str:
     dt = _extract_prelevement_datetime(html)
     code_insee = payload.get("communeDepartement")  # <- INSEE desde el payload
     return build_id_from_date_and_insee(dt, code_insee)
+
 
 def process_city(city: dict) -> str:
     session = make_session()
@@ -44,6 +48,7 @@ def process_city(city: dict) -> str:
     upsert_resultats(rows_res)
 
     return page_id
+
 
 def process_html_debug(html: str, city_stub: dict | None = None) -> str:
     payload = {
