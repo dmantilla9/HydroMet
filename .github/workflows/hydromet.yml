@@ -1,0 +1,93 @@
+name: HydroMet Daily
+
+on:
+  schedule:
+    - cron: "0 5 * * *"   # todos los días a las 05:00 UTC
+  workflow_dispatch:       # permitir correr manualmente desde Actions
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hydromet-daily
+  cancel-in-progress: false
+
+jobs:
+  water:
+    name: Water ETL
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      # Vars que tu código lee desde config.py / os.environ
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      OROBNAT_BASE: https://ssm.eaupotable.sante.gouv.fr
+      OROBNAT_URL_GET: https://ssm.eaupotable.sante.gouv.fr/orobnat/rechercherResultatQualite.do
+      OROBNAT_URL_POST: https://ssm.eaupotable.sante.gouv.fr/orobnat/rechercherResultatQualite.do
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Run Water ETL
+        run: |
+          python run_water.py --sleep 1.0 --limit 0 | tee water.log
+
+      - name: Upload logs (water)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: water-log
+          path: water.log
+
+  weather:
+    name: Weather ETL
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: water
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      # agrega aquí API keys de clima si tu fetch_weather las usa
+      OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Run Weather ETL
+        run: |
+          python run_weather.py --sleep 0.8 --limit 0 | tee weather.log
+
+      - name: Upload logs (weather)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: weather-log
+          path: weather.log
