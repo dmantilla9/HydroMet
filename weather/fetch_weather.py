@@ -2,12 +2,12 @@ import requests
 import time
 from datetime import datetime, timezone
 
-from config import API_KEY
+from config import API_KEY, OPENWATHER_URL
 from db.supabase_utils import fetch_cities, insert_weather
 
 
 def get_weather(lat, lon, api_key=API_KEY, units="metric", lang="en"):
-    url = "https://api.openweathermap.org/data/2.5/weather"
+    url = OPENWATHER_URL
     params = {"lat": lat, "lon": lon, "appid": api_key, "units": units, "lang": lang}
     resp = requests.get(url, params=params, timeout=20)
     if resp.status_code == 200:

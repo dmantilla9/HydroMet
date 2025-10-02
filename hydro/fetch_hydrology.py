@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import urllib3
 
-from db.supabase_utils import fetch_cities, insert_weather
+
 
 # Opcional: suprime el warning por verify=False (para pruebas)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
