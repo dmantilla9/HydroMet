@@ -18,12 +18,21 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
-      # Vars que tu código lee desde config.py / os.environ
-      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-      BASE: ${{ vars.BASE }}
-      URL_GET: ${{ vars.URL_GET }}
-      URL_POST: ${{ vars.URL_POST }}
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+
+        # Lo que hoy usa tu config.py:
+        BASE_OROBNAT:      ${{ vars.BASE }}
+        URL_OROBNAT_GET:   ${{ vars.URL_GET }}
+        URL_OROBNAT_POST:  ${{ vars.URL_POST }}
+        # OPENWATER_URL:     https://api.openweathermap.org/data/2.5   # corrige el typo si cambias config
+        API_KEY:           ${{ secrets.OPENWEATHER_API_KEY }}
+        
+        # (Opcional) deja también los nombres “nuevos” por claridad
+        BASE:     ${{ vars.BASE }}
+        URL_GET:  ${{ vars.URL_GET }}
+        URL_POST: ${{ vars.URL_POST }}
+        OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
