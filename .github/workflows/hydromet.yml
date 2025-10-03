@@ -25,7 +25,7 @@ jobs:
         BASE_OROBNAT:      ${{ vars.BASE }}
         URL_OROBNAT_GET:   ${{ vars.URL_GET }}
         URL_OROBNAT_POST:  ${{ vars.URL_POST }}
-        # OPENWATER_URL:     https://api.openweathermap.org/data/2.5   # corrige el typo si cambias config
+        OPENWATHER_URL:     ${{ vars.OPENWATHER_URL }}
         API_KEY:           ${{ secrets.OPENWEATHER_API_KEY }}
         
         # (Opcional) deja también los nombres “nuevos” por claridad
