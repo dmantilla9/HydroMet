@@ -18,21 +18,25 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
+        # Database Supabase (https://supabase.com/)
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
         SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        
+        # API Key OpenWeather (https://openweathermap.org/api)
+        API_KEY: ${{ secrets.API_KEY }}
+        OPENWATHER_URL: ${{ vars.OPENWATHER_URL }}
 
-        # Lo que hoy usa tu config.py:
+        # Orobnat config
         BASE_OROBNAT:      ${{ vars.BASE }}
         URL_OROBNAT_GET:   ${{ vars.URL_GET }}
         URL_OROBNAT_POST:  ${{ vars.URL_POST }}
-        OPENWATHER_URL:     ${{ vars.OPENWATHER_URL }}
-        API_KEY:           ${{ secrets.OPENWEATHER_API_KEY }}
         
         # (Opcional) deja también los nombres “nuevos” por claridad
         BASE:     ${{ vars.BASE }}
         URL_GET:  ${{ vars.URL_GET }}
+        #  API data.gouv.fr -- Get al info to communes in France
         URL_POST: ${{ vars.URL_POST }}
-        OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
