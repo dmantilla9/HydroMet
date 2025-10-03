@@ -8,7 +8,7 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 # OpenWatherMap Config
-OPENWATHER_URL = os.getenv("OPENWATER_URL")
+OPENWEATHER_URL = os.getenv("OPENWATHER_URL")
 API_KEY = os.getenv("API_KEY")
 
 # Orobnat config

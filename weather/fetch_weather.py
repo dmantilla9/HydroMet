@@ -3,12 +3,12 @@ from datetime import datetime, timezone
 
 import requests
 
-from config import API_KEY, OPENWATHER_URL
+from config import API_KEY, OPENWEATHER_URL
 from db.supabase_utils import fetch_cities, insert_weather
 
 
 def get_weather(lat, lon, api_key=API_KEY, units="metric", lang="en"):
-    url = OPENWATHER_URL
+    url = OPENWEATHER_URL
     params = {"lat": lat, "lon": lon, "appid": api_key, "units": units, "lang": lang}
     resp = requests.get(url, params=params, timeout=20)
     if resp.status_code == 200:
