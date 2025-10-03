@@ -21,9 +21,9 @@ jobs:
       # Vars que tu código lee desde config.py / os.environ
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-      OROBNAT_BASE: https://ssm.eaupotable.sante.gouv.fr
-      OROBNAT_URL_GET: https://ssm.eaupotable.sante.gouv.fr/orobnat/rechercherResultatQualite.do
-      OROBNAT_URL_POST: https://ssm.eaupotable.sante.gouv.fr/orobnat/rechercherResultatQualite.do
+      BASE: ${{ vars.BASE }}
+      URL_GET: ${{ vars.URL_GET }}
+      URL_POST: ${{ vars.URL_POST }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -61,7 +61,7 @@ jobs:
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-      # agrega aquí API keys de clima si tu fetch_weather las usa
+      # API Key OpenWeather (https://openweathermap.org/api)
       OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
     steps:
       - name: Checkout

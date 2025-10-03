@@ -16,5 +16,5 @@ BASE = os.getenv("BASE_OROBNAT")
 URL_GET = os.getenv("URL_OROBNAT_GET")
 URL_POST = os.getenv("URL_OROBNAT_POST")
 
-# API data.gouv.fr
+# API data.gouv.fr -- Communes in France
 CSV_URL = os.getenv("CSV_URL")
