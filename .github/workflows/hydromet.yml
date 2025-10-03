@@ -92,7 +92,7 @@ jobs:
 
       - name: Run Weather ETL
         run: |
-          python weather.fetch_weather --sleep 0.8 --limit 0 | tee weather.log
+          python -m weather.fetch_weather --sleep 0.8 --limit 0 | tee weather.log
 
       - name: Upload logs (weather)
         uses: actions/upload-artifact@v4
