@@ -24,7 +24,7 @@ jobs:
         
         # API Key OpenWeather (https://openweathermap.org/api)
         API_KEY: ${{ secrets.API_KEY }}
-        OPENWATHER_URL: ${{ vars.OPENWATHER_URL }}
+        OPENWEATHER_URL: ${{ vars.OPENWEATHER_URL }}
 
         # Orobnat config
         BASE_OROBNAT:      ${{ vars.BASE }}
