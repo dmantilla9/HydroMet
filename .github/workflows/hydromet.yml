@@ -44,7 +44,7 @@ jobs:
 
       - name: Run Water ETL
         run: |
-          python -m hydro.cli.py --sleep 1.0 --limit 0 | tee water.log
+          python -m hydro.cli --sleep 1.0 --limit 0 | tee water.log
 
       - name: Upload logs (water)
         uses: actions/upload-artifact@v4
@@ -83,7 +83,7 @@ jobs:
 
       - name: Run Weather ETL
         run: |
-          python weather.fetch_weather.py --sleep 0.8 --limit 0 | tee weather.log
+          python weather.fetch_weather --sleep 0.8 --limit 0 | tee weather.log
 
       - name: Upload logs (weather)
         uses: actions/upload-artifact@v4
