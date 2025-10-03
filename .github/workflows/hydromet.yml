@@ -22,8 +22,6 @@ jobs:
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
         SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         
-        # API Key OpenWeather (https://openweathermap.org/api)
-        API_KEY: ${{ secrets.API_KEY }}
         OPENWEATHER_API_KEY: ${{ secrets.API_KEY }}
         OPENWEATHER_URL: https://api.openweathermap.org/data/2.5/weather
 
@@ -75,8 +73,10 @@ jobs:
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      
       # API Key OpenWeather (https://openweathermap.org/api)
-      OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+      API_KEY: ${{ secrets.API_KEY }}
+      OPENWEATHER_URL: ${{ vars.OPENWEATHER_URL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
