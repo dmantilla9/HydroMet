@@ -175,3 +175,7 @@ cython_debug/
 
 # ToDo list
 ToDo.txt
+
+#Test files
+test_*.py
+ind_service.py
