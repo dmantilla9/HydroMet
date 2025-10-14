@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Text, Numeric, Float, DateTime
+from sqlalchemy import Column, String, Text, Numeric, Float, DateTime, Boolean
 from sqlalchemy.sql import func
 from connection_supabase import Base
 
@@ -64,3 +64,18 @@ class communes(Base):
     url_wikipedia = Column(Text, Nullable = True)
     url_villedereve = Column(Text, nullable = True)
     date_creation = Column(DateTime(timezone = True), server_default=func.now()) 
+
+class cities(Base):
+    __tablename__ = "fait_cities"
+    __table_args__ = {"schema": "Hydromet"}
+
+    postal_code = Column(String(20), primary_key = True) 
+    commune_code = Column(String(20), Nullable = False) 
+    city_name = Column(String(200), Nullable = False) 
+    country = Column(String(3), Nullable = False, default = 'FR') # ISO 3166-1 alpha-2
+    latitud = Column(Numeric(9, 6), Nullable = False) 
+    longitud = Column(Numeric(9, 6), Nullable = False) 
+    water_code = Column(String(15), Nullable = False) 
+    timezone = Column(String(50), Nullable = False, default = 'Europe/Paris') 
+    active = Column(Boolean, Nullable = False, server_default = True) 
+    inserted_at = Column(DateTime(timezone = True), server_default=func.now())
