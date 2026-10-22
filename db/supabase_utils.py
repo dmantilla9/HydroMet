@@ -21,6 +21,11 @@ TBL_CITIES = "cities"
 TBL_WEATHER = "weather_data"
 TBL_WATER_NETWORK = "water_network"
 
+# ----------------------------
+# Table control (constants) - Notification
+# ----------------------------
+TBL_NOTIFICATIONS = "hydromet_notification_history"
+
 # New analysis tables (normalized)
 TBL_CRITERES = "fait_anl_criteres_recherche"
 TBL_INFO = "fait_anl_informations_generales"
@@ -186,5 +191,18 @@ def get_resultats_for(page_id: str) -> list[dict[str, Any]]:
         return []
     res = _exec_or_raise(
         supabase.table(TBL_RESULTS).select("*").eq("id", page_id), label="get_resultats_for"
+    )
+    return res.data or []
+
+
+def get_notification_history(
+    channel: str = "telegram",
+) -> list[dict[str, Any]]:
+    """Fetch notification history for a channel."""
+    res = _exec_or_raise(
+        supabase.table(TBL_NOTIFICATIONS)
+        .select("analysis_id, status")
+        .eq("notification_channel", channel),
+        label="get_notification_history",
     )
     return res.data or []
