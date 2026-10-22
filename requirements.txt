@@ -8,3 +8,4 @@ streamlit
 bcrypt
 ruff
 mypy
+psycopg[binary]>=3.2,<4
