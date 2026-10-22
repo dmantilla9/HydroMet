@@ -1,3 +1,62 @@
+
+import json
+import logging
+
+from db.supabase_utils import get_pending_water_analyses
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s",
+)
+
+logger = logging.getLogger("hydromet")
+
+
+def main():
+    logger.info("Starting HydroMet water analysis check")
+
+    analyses = get_pending_water_analyses(
+        commune="95176",
+        channel="telegram",
+    )
+
+    logger.info("Pending analyses found: %s", len(analyses))
+
+    if not analyses:
+        logger.info("No new water analyses available")
+        return
+
+    for analysis in analyses:
+        payload = analysis["notification_payload"]
+
+        logger.info(
+            "New analysis detected: %s",
+            analysis["analysis_id"],
+        )
+
+        logger.info(
+            "Analysis date: %s",
+            analysis["date_prelevement"],
+        )
+
+        logger.info(
+            "Parameters found: %s",
+            len(payload.get("resultats", [])),
+        )
+
+        print(
+            json.dumps(
+                payload,
+                indent=2,
+                ensure_ascii=False,
+                default=str,
+            ),
+            flush=True,
+        )
+
+
+if __name__ == "__main__":
+    main()
 import logging
 
 from db.supabase_utils import supabase, TBL_NOTIFICATIONS
