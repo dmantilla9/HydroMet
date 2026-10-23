@@ -209,24 +209,19 @@ def get_notification_history(
 
 
 def get_pending_water_analyses(
-    commune: str = "95176",
     channel: str = "telegram",
 ) -> list[dict[str, Any]]:
-    """Fetch pending water analyses with their complete results."""
+    """Fetch pending water analyses for all active cities."""
 
     response = _exec_or_raise(
         supabase.rpc(
-            "get_pending_water_analyses",
-            {
-                "p_commune": commune,
-                "p_channel": channel,
-            },
+            "get_pending_water_analyses_active",
+            {"p_channel": channel},
         ),
         label="get_pending_water_analyses",
     )
 
     return response.data or []
-
 
 
 def mark_analysis_as_sent(
