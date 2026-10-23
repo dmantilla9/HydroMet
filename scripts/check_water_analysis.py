@@ -20,7 +20,6 @@ logging.basicConfig(
 
 logger = logging.getLogger("hydromet")
 
-COMMUNE = "95176"
 CHANNEL = "telegram"
 
 
@@ -42,6 +41,12 @@ def format_conformity(value):
 
 def build_message(payload):
     """Build a readable Telegram notification."""
+
+    # Get the city name dynamically from the payload
+    city_name = escape(
+        str(payload.get("city_name") or "Ville inconnue")
+    )
+    
     raw_date = payload.get("date_prelevement")
     date_label = "Non renseignée"
 
@@ -56,7 +61,7 @@ def build_message(payload):
     lines = [
         "💧 <b>HydroMet | Qualité de l'eau</b>",
         "",
-        "📍 <b>Cormeilles-en-Parisis</b>",
+        f"📍 <b>{city_name}</b>",
         f"📅 Prélèvement : {date_label}",
         "",
         "<b>Conformité sanitaire</b>",
@@ -149,8 +154,7 @@ def main():
     logger.info("Checking pending water analyses")
 
     analyses = get_pending_water_analyses(
-        commune=COMMUNE,
-        channel=CHANNEL,
+    channel=CHANNEL,
     )
 
     logger.info("Pending analyses: %s", len(analyses))
@@ -160,13 +164,22 @@ def main():
         return
 
     # Send older pending analyses first.
-    for analysis in reversed(analyses):
+    for analysis in analyses:
         analysis_id = analysis["analysis_id"]
         payload = analysis["notification_payload"]
 
         logger.info("Processing analysis: %s", analysis_id)
 
         message = build_message(payload)
+
+        if os.getenv("HYDROMET_DRY_RUN", "false").lower() == "true":
+        logger.info(
+            "DRY RUN | Analysis: %s | City: %s",
+            analysis_id,
+            payload.get("city_name"),
+        )
+        logger.info("Message preview:\n%s", message)
+        continue
 
         send_telegram_message(message)
 
