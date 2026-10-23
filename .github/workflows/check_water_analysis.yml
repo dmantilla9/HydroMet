@@ -31,5 +31,5 @@ jobs:
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          HYDROMET_DRY_RUN: "true"
+          HYDROMET_DRY_RUN: "false"
         run: python -m scripts.check_water_analysis
