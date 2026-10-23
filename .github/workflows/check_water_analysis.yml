@@ -3,6 +3,10 @@ name: HydroMet - Water Analysis Check
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "15 12 * * *"
+      timezone: "Europe/Paris"
+
 
 jobs:
   check-water-analysis:
