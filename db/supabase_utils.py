@@ -226,3 +226,28 @@ def get_pending_water_analyses(
     )
 
     return response.data or []
+
+
+
+def mark_analysis_as_sent(
+    analysis_id: str,
+    channel: str = "telegram",
+) -> None:
+    """Mark an analysis as sent after successful notification."""
+
+    response = _exec_or_raise(
+        supabase.table("hydromet_notification_history").upsert(
+            {
+                "analysis_id": analysis_id,
+                "notification_channel": channel,
+                "status": "sent",
+            },
+            on_conflict="analysis_id,notification_channel",
+        ),
+        label="mark_analysis_as_sent",
+    )
+
+    if not response.data:
+        raise RuntimeError(
+            f"Unable to confirm notification history for {analysis_id}"
+        )
