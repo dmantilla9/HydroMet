@@ -173,13 +173,13 @@ def main():
         message = build_message(payload)
 
         if os.getenv("HYDROMET_DRY_RUN", "false").lower() == "true":
-        logger.info(
-            "DRY RUN | Analysis: %s | City: %s",
-            analysis_id,
-            payload.get("city_name"),
-        )
-        logger.info("Message preview:\n%s", message)
-        continue
+            logger.info(
+                "DRY RUN | Analysis: %s | City: %s",
+                analysis_id,
+                payload.get("city_name"),
+            )
+            logger.info("Message preview:\n%s", message)
+            continue
 
         send_telegram_message(message)
 
