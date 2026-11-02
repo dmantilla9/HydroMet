@@ -46,6 +46,10 @@ def build_message(payload):
     city_name = escape(
         str(payload.get("city_name") or "Ville inconnue")
     )
+
+    city_collect = escape(
+        str(payload.get("commune_prelevement") or "Non renseignée")
+    )
     
     raw_date = payload.get("date_prelevement")
     date_label = "Non renseignée"
