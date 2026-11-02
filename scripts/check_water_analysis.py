@@ -63,7 +63,7 @@ def build_message(payload):
         "",
         f"📍 <b>{city_name}</b>",
         f"📅 Prélèvement : {date_label}",
-        f"📅 Commune de prélèvement : {city_collect}",
+        f"🧪 Commune de prélèvement : {city_collect}",
         "",
         "<b>Conformité sanitaire</b>",
         "Bactériologique : "
