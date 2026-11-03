@@ -119,15 +119,14 @@ def build_message(payload):
     return "\n".join(lines)
 
 
-def send_telegram_message(message):
-    """Send message and verify Telegram API response."""
+def send_telegram_message(message, chat_id, message_thread_id):
+    """Send a message to a specific Telegram topic."""
     token = os.environ["TELEGRAM_BOT_TOKEN"]
-    chat_id = os.environ["TELEGRAM_CHAT_ID"]
 
     url = f"https://api.telegram.org/bot{token}/sendMessage"
-
     body = urlencode({
         "chat_id": chat_id,
+        "message_thread_id": message_thread_id,
         "text": message,
         "parse_mode": "HTML",
     }).encode("utf-8")
