@@ -10,6 +10,7 @@ from urllib.request import Request, urlopen
 
 from db.supabase_utils import (
     get_pending_water_analyses,
+    get_telegram_topic,
     mark_analysis_as_sent,
 )
 
@@ -154,12 +155,12 @@ def send_telegram_message(message, chat_id, message_thread_id):
     return result
 
 
+
 def main():
+    """Check and notify pending analyses by Telegram topic."""
     logger.info("Checking pending water analyses")
 
-    analyses = get_pending_water_analyses(
-    channel=CHANNEL,
-    )
+    analyses = get_pending_water_analyses(channel=CHANNEL)
 
     logger.info("Pending analyses: %s", len(analyses))
 
@@ -167,25 +168,60 @@ def main():
         logger.info("No new analyses. No notification sent.")
         return
 
-    # Send older pending analyses first.
+    dry_run = os.getenv("HYDROMET_DRY_RUN", "false").lower() == "true"
+
     for analysis in analyses:
         analysis_id = analysis["analysis_id"]
         payload = analysis["notification_payload"]
 
-        logger.info("Processing analysis: %s", analysis_id)
+        city_name = payload.get("city_name", "Unknown")
+        code_insee = str(payload["commune"])
+
+        logger.info(
+            "Processing %s | %s | %s",
+            analysis_id,
+            city_name,
+            code_insee,
+        )
+
+        # Get the destination for this commune.
+        topic = get_telegram_topic(code_insee)
+
+        if not topic:
+            logger.warning(
+                "No Telegram topic for %s (%s). Skipping.",
+                city_name,
+                code_insee,
+            )
+            continue
+
+        chat_id = topic.get("chat_id")
+        thread_id = topic.get("message_thread_id")
+
+        if chat_id is None or thread_id is None:
+            logger.warning(
+                "Incomplete Telegram destination for %s",
+                city_name,
+            )
+            continue
 
         message = build_message(payload)
 
-        if os.getenv("HYDROMET_DRY_RUN", "false").lower() == "true":
+        if dry_run:
             logger.info(
-                "DRY RUN | Analysis: %s | City: %s",
-                analysis_id,
-                payload.get("city_name"),
+                "DRY RUN | City: %s | Chat: %s | Thread: %s",
+                city_name,
+                chat_id,
+                thread_id,
             )
             logger.info("Message preview:\n%s", message)
             continue
 
-        send_telegram_message(message)
+        send_telegram_message(
+            message,
+            chat_id,
+            thread_id,
+        )
 
         logger.info("Telegram accepted: %s", analysis_id)
 
@@ -196,3 +232,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
