@@ -31,6 +31,7 @@ TBL_CRITERES = "fait_anl_criteres_recherche"
 TBL_INFO = "fait_anl_informations_generales"
 TBL_CONF = "fait_anl_conformite"
 TBL_RESULTS = "fait_anl_resultats_analyses"
+TBL_TELEGRAM_TOPICS = "hydromet_telegram_topics"
 
 
 # =====================================================================
@@ -246,3 +247,23 @@ def mark_analysis_as_sent(
         raise RuntimeError(
             f"Unable to confirm notification history for {analysis_id}"
         )
+
+
+def get_telegram_topic(
+    code_insee: str,
+) -> dict[str, Any] | None:
+    """Get the Telegram destination for a commune."""
+
+    response = _exec_or_raise(
+        supabase.table(TBL_TELEGRAM_TOPICS)
+        .select("chat_id, message_thread_id, commune_name")
+        .eq("code_insee", code_insee)
+        .limit(1),
+        label="get_telegram_topic",
+    )
+
+    if not response.data:
+        return None
+
+    return response.data[0]
+
